@@ -1,54 +1,57 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todoapp/core/utilities/colors.dart';
+import 'package:todoapp/core/utilities/firebase.dart';
+import 'package:todoapp/providers/list_provider/listProvider.dart';
+import 'package:todoapp/ui/auth/home/taskListTab.dart';
 
-class TasksScreen extends StatelessWidget {
-  const TasksScreen({Key? key}) : super(key: key);
+import '../../../models/tasks.dart';
+
+class TasksScreen extends StatefulWidget {
+  @override
+  State<TasksScreen> createState() => _TasksScreenState();
+}
+
+class _TasksScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var provider=Provider.of<ListProvider>(context);
+    if (provider.tasksList.isEmpty) {
+      provider.readTaskFromFirestore();
+    }
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) => Card(
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            width: double.infinity,
+            child: EasyDateTimeLine(
+              activeColor: AppColor.primary,
+              initialDate: provider.chosenDate,
 
-          margin: EdgeInsets.all(8),
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height*.06,
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
+              onDateChange: (selectedDate) {
+                provider.changeDate(selectedDate);
 
-
-                  ),
-                  ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Play Basket Ball",style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 20,color: AppColor.primary),),
-                    Text("10:05 AM  ")
-                  ],
-                ),
-               Container(
-                 padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 2),
-                 decoration: BoxDecoration(
-                   color: AppColor.primary,
-                   borderRadius: BorderRadius.circular(10)
-                 ),
-                 child: Icon(Icons.check,color: Colors.white,size:30 ,),
-               )
-               // ElevatedButton(onPressed: (){}, child: Icon(Icons.check))
-              ],
+              },
+              locale: "en",
+              headerProps: EasyHeaderProps(showHeader: false),
             ),
-          )
-        ),
+          ),
+          Expanded(
+            child: provider.tasksList.isEmpty ? Center(child: Text("No Tasks Yet")):ListView.builder(
+                itemCount: provider.tasksList.length,
+                itemBuilder: (context, index) =>
+                    TaskListTab(task: provider.tasksList[index])),
+          ),
+        ],
       ),
     );
   }
+
+
 }

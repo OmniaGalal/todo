@@ -43,6 +43,7 @@ class regisrerScreen extends StatelessWidget {
                     text: "Full Name",
                     controller: controllerName,
                   ),
+
                   CustomTextFormField(
                     validation: (value) {
                       if(value==Null||value!.trim().isEmpty){
@@ -55,6 +56,7 @@ class regisrerScreen extends StatelessWidget {
                     text: "E-mail",
                     controller: controllerEmail,
                   ),
+
                   CustomTextFormField(
                     validation: (value) {
                       if(value==Null||value!.trim().isEmpty){

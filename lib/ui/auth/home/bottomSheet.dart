@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todoapp/components/custom_text_form_field.dart';
 import 'package:todoapp/core/utilities/colors.dart';
 import 'package:todoapp/core/utilities/firebase.dart';
 import 'package:todoapp/models/tasks.dart';
+import 'package:todoapp/ui/auth/home/taskListTab.dart';
+import 'package:todoapp/ui/auth/home/tasks.dart';
+
+import '../../../providers/list_provider/listProvider.dart';
 
 class AddBottomSheet extends StatefulWidget {
   AddBottomSheet({Key? key}) : super(key: key);
+
 
   @override
   State<AddBottomSheet> createState() => _AddBottomSheetState();
@@ -14,11 +20,12 @@ class AddBottomSheet extends StatefulWidget {
 class _AddBottomSheetState extends State<AddBottomSheet> {
   var formKey = GlobalKey<FormState>();
   var seletedDate = DateTime.now();
+
   TextEditingController title = TextEditingController();
   TextEditingController desc = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<ListProvider>(context);
     return Container(
       margin: EdgeInsets.all(20),
       child: Column(
@@ -54,7 +61,7 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
                         return "Can't be empty";
                       }
                     },
-                    controller: desc,
+                    controller:desc,
                     text: "enter your task description",
                     lines: 4,
                   ),
@@ -71,12 +78,27 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
               showDate();
             },
             child: Center(
-                child: Text(
-              "${seletedDate.day}/${seletedDate.month}/${seletedDate.year}",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontSize: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "${seletedDate.day}/${seletedDate.month}/${seletedDate.year} ",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontSize: 16),
+                ),
+                Text(
+                  "${ seletedDate.hour}  -  ${seletedDate.minute}} ",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontSize: 16,color: Colors.transparent),
+                ),
+
+
+
+              ],
             )),
           ),
           SizedBox(height: 8),
@@ -87,11 +109,14 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
                       title: title.text,
                       date: seletedDate,
                       description: desc.text);
-                  firebaseUtils.addTaskToFireStore(task).
-                  timeout(Duration(milliseconds: 500),onTimeout: () =>
-                      print('added successfully'),
+                  firebaseUtils.addTaskToFireStore(task).timeout(
+                        Duration(milliseconds: 500),
+                        onTimeout: () => print('added successfully'),
+                        // print(task.date),
+                      );
 
-                );
+                  provider.readTaskFromFirestore();
+
                   Navigator.pop(context);
                 }
               },
@@ -107,9 +132,12 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
         initialDate: DateTime.now(),
         firstDate: DateTime.now(),
         lastDate: DateTime.now().add(Duration(days: 365)));
+
     setState(() {
       if (date != null) {
         seletedDate = date;
+      } else {
+        print('Nullll');
       }
     });
   }

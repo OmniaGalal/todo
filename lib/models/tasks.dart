@@ -1,11 +1,11 @@
 import 'package:todoapp/models/tasks.dart';
 
 class Task {
-  String id;
-  String title;
-  String description;
-  DateTime date;
-  bool isDone;
+  String? id;
+  String? title;
+  String? description;
+  DateTime? date;
+  bool? isDone;
   Task(
       {this.id = "",
       required this.title,
@@ -17,7 +17,7 @@ class Task {
       "id": id,
       "title": title,
       "description": description,
-      "date": date.millisecondsSinceEpoch,
+      "date": date?.millisecondsSinceEpoch,
       "isDone": isDone
     };
   }
@@ -27,6 +27,6 @@ class Task {
             id: data["id"],
             title: data["title"],
             description: data["description"],
-            date: DateTime.fromMillisecondsSinceEpoch(data["dateTime"]),
+            date:data["date"] != null ? DateTime.fromMillisecondsSinceEpoch(data["date"]) : null,
             isDone: data["isDone"]);
 }
