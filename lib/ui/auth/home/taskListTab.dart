@@ -10,6 +10,7 @@ import 'package:todoapp/ui/auth/home/editScreen.dart';
 import '../../../core/utilities/colors.dart';
 import '../../../models/tasks.dart';
 import '../../../providers/list_provider/listProvider.dart';
+import '../../../providers/user_provider/userProvider.dart';
 
 class TaskListTab extends StatefulWidget {
   TaskListTab({required this.task});
@@ -23,6 +24,8 @@ class _TaskListTabState extends State<TaskListTab> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<ListProvider>(context);
+    var userprovider=Provider.of<UserProvider>(context,listen: false);
+
     return Column(
       children: [
         Slidable(
@@ -32,8 +35,8 @@ class _TaskListTabState extends State<TaskListTab> {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  firebaseUtils.deleteTask(widget.task);
-                  provider.readTaskFromFirestore();
+                  firebaseUtils.deleteTask(widget.task,userprovider.currentUser!.id!);
+                  provider.readTaskFromFirestore(userprovider.currentUser!.id!);
                 },
                 backgroundColor: Color(0xFFFE4A49),
                 foregroundColor: Colors.white,
@@ -112,8 +115,8 @@ class _TaskListTabState extends State<TaskListTab> {
                             date: widget.task.date,
                             description: widget.task.description,
                             id: widget.task.id,
-                            isDone: true));
-                        provider.readTaskFromFirestore();
+                            isDone: true),userprovider.currentUser!.id!);
+                        provider.readTaskFromFirestore(userprovider.currentUser!.id!);
                       },
                       child: widget.task.isDone == true
                           ? Text(

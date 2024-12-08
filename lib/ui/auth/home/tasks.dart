@@ -9,6 +9,7 @@ import 'package:todoapp/providers/list_provider/listProvider.dart';
 import 'package:todoapp/ui/auth/home/taskListTab.dart';
 
 import '../../../models/tasks.dart';
+import '../../../providers/user_provider/userProvider.dart';
 
 class TasksScreen extends StatefulWidget {
   @override
@@ -20,8 +21,10 @@ class _TasksScreenState extends State<TasksScreen> {
   @override
   Widget build(BuildContext context) {
     var provider=Provider.of<ListProvider>(context);
+    var userprovider=Provider.of<UserProvider>(context,listen: false);
+
     if (provider.tasksList.isEmpty) {
-      provider.readTaskFromFirestore();
+      provider.readTaskFromFirestore(userprovider.currentUser!.id!);
     }
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -35,7 +38,7 @@ class _TasksScreenState extends State<TasksScreen> {
               initialDate: provider.chosenDate,
 
               onDateChange: (selectedDate) {
-                provider.changeDate(selectedDate);
+                provider.changeDate(selectedDate,userprovider.currentUser!.id!);
 
               },
               locale: "en",

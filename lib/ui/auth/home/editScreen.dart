@@ -9,6 +9,8 @@ import 'package:todoapp/ui/auth/home/bottomSheet.dart';
 import 'package:todoapp/ui/auth/home/homeScreen.dart';
 import 'package:todoapp/ui/auth/home/tasks.dart';
 
+import '../../../providers/user_provider/userProvider.dart';
+
 class EditScreen extends StatefulWidget {
   static String routeName = "Edit";
 
@@ -28,6 +30,7 @@ class _EditScreenState extends State<EditScreen> {
     var args = ModalRoute.of(context)?.settings.arguments as Task;
 
     var provider = Provider.of<ListProvider>(context);
+    var userprovider=Provider.of<UserProvider>(context,listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -89,8 +92,8 @@ class _EditScreenState extends State<EditScreen> {
                         id: args.id,
                         title: args.title,
                         date: select,
-                        description: args.description));
-                    provider.readTaskFromFirestore();
+                        description: args.description),userprovider.currentUser!.id!);
+                    provider.readTaskFromFirestore(userprovider.currentUser!.id!);
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

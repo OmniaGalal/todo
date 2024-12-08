@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:todoapp/core/utilities/colors.dart';
 import 'package:todoapp/firebase_options.dart';
 import 'package:todoapp/providers/list_provider/listProvider.dart';
+import 'package:todoapp/providers/user_provider/userProvider.dart';
 import 'package:todoapp/ui/auth/home/editScreen.dart';
 import 'package:todoapp/ui/auth/register/registerScreen.dart';
 
@@ -16,12 +17,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseFirestore.instance.disableNetwork();
+  await FirebaseFirestore.instance.enableNetwork();
   FirebaseFirestore.instance.settings =
       Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
-  runApp( ChangeNotifierProvider(
-    create: (context) => ListProvider(),
-      child: MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => ListProvider(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+    )
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -37,11 +43,9 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (context) => HomeScreen(),
         loginScreen.routeName: (context) => loginScreen(),
         EditScreen.routeName: (context) => EditScreen(),
-
-
       },
       initialRoute: regisrerScreen.routeName,
-      home: HomeScreen(),
+      home: loginScreen(),
     );
   }
 }

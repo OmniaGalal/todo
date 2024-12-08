@@ -8,6 +8,7 @@ import 'package:todoapp/ui/auth/home/taskListTab.dart';
 import 'package:todoapp/ui/auth/home/tasks.dart';
 
 import '../../../providers/list_provider/listProvider.dart';
+import '../../../providers/user_provider/userProvider.dart';
 
 class AddBottomSheet extends StatefulWidget {
   AddBottomSheet({Key? key}) : super(key: key);
@@ -26,6 +27,8 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<ListProvider>(context);
+    var userprovider=Provider.of<UserProvider>(context,listen: false);
+
     return Container(
       margin: EdgeInsets.all(20),
       child: Column(
@@ -109,13 +112,15 @@ class _AddBottomSheetState extends State<AddBottomSheet> {
                       title: title.text,
                       date: seletedDate,
                       description: desc.text);
-                  firebaseUtils.addTaskToFireStore(task).timeout(
+                  firebaseUtils.addTaskToFireStore(task,userprovider.currentUser!.id!)
+                      .then((value) =>  print('added successfully'))
+                      .timeout(
                         Duration(milliseconds: 500),
                         onTimeout: () => print('added successfully'),
                         // print(task.date),
                       );
 
-                  provider.readTaskFromFirestore();
+                  provider.readTaskFromFirestore(userprovider.currentUser!.id!);
 
                   Navigator.pop(context);
                 }
